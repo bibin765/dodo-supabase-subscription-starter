@@ -1,4 +1,4 @@
-import { getUser } from "@/actions/auth";
+import { getUser } from "@/actions/get-user";
 import { redirect } from "next/navigation";
 
 export default async function Home() {

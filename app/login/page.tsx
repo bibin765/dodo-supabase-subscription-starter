@@ -1,4 +1,4 @@
-import { getUser } from "@/actions/auth";
+import { getUser } from "@/actions/get-user";
 import AuthForm from "@/components/auth/auth-form";
 import { redirect } from "next/navigation";
 import React from "react";

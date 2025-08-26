@@ -1,3 +1,4 @@
+import { createUser } from "@/actions/create-user";
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
@@ -9,6 +10,7 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error && data.session) {
+      await createUser();
       return NextResponse.redirect(`${origin}`);
     }
   }

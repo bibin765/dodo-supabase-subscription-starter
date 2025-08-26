@@ -26,6 +26,8 @@ import { toast } from "sonner";
 import { changePlan } from "@/actions/change-plan";
 import { SubscriptionManagement } from "../billingsdk/subscription-management";
 import { cancelSubscription } from "@/actions/cancel-subscription";
+import Image from "next/image";
+import { Separator } from "../ui/separator";
 
 export function ComponentsSection(props: {
   products: ProductListResponse[];
@@ -138,10 +140,26 @@ export function ComponentsSection(props: {
   return (
     <div className="md:px-8 py-12 relative overflow-hidden w-full max-w-7xl mx-auto">
       <div className="text-center">
-        <h2 className="text-2xl sm:text-2xl font-display md:text-3xl font-medium text-primary">
+        <div className="flex flex-row my-4  items-center h-8 justify-center gap-4 ">
+          <Image
+            src="/assets/dodo.svg"
+            alt="Dodo Payments"
+            width={32}
+            height={32}
+          />
+          <Separator orientation="vertical" />
+
+          <Image
+            src="/assets/supabase.svg"
+            alt="Supabase"
+            width={32}
+            height={32}
+          />
+        </div>
+        <h2 className="text-xl font-display md:text-2xl font-medium text-primary">
           Dodo Supabase subscription starter
         </h2>
-        <p className="text-sm mt-4 text-muted-foreground max-w-2xl mx-auto tracking-tight">
+        <p className="text-sm mt-2 text-muted-foreground max-w-xl mx-auto tracking-tight">
           Manage your subscription and payments with Dodo Payments and Supabase.
         </p>
       </div>

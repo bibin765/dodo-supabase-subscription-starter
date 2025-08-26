@@ -15,8 +15,11 @@ export default function AuthForm() {
   return (
     <Card className="w-full max-w-sm mx-auto">
       <CardHeader>
-        <CardTitle>Sign in to your account</CardTitle>
-        <CardDescription>Sign in to your account to continue</CardDescription>
+        <CardTitle>Sign in or create an account</CardTitle>
+        <CardDescription>
+          Sign in to your account to continue or create an account to get
+          started.
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <GoogleSignInButton />

@@ -1,12 +1,22 @@
 "use server";
 
 import { db } from "@/lib/drizzle/client";
-import { SelectSubscription, subscriptions, users } from "@/lib/drizzle/schema";
+import {
+  SelectSubscription,
+  SelectUser,
+  subscriptions,
+  users,
+} from "@/lib/drizzle/schema";
 import { ServerActionRes } from "@/types/server-action";
 import { getUser } from "./get-user";
 import { eq } from "drizzle-orm";
 
-export async function getUserSubscription(): ServerActionRes<SelectSubscription> {
+type UserSubscription = {
+  subscription: SelectSubscription | null;
+  user: SelectUser;
+};
+
+export async function getUserSubscription(): ServerActionRes<UserSubscription> {
   const userRes = await getUser();
 
   if (!userRes.success) {
@@ -24,16 +34,15 @@ export async function getUserSubscription(): ServerActionRes<SelectSubscription>
   }
 
   if (!userDetails.currentSubscriptionId) {
-    return { success: false, error: "User has no subscription" };
+    return { success: true, data: { subscription: null, user: userDetails } };
   }
 
   const subscription = await db.query.subscriptions.findFirst({
     where: eq(subscriptions.subscriptionId, userDetails.currentSubscriptionId),
   });
 
-  if (!subscription) {
-    return { success: false, error: "Subscription not found" };
-  }
-
-  return { success: true, data: subscription };
+  return {
+    success: true,
+    data: { subscription: subscription ?? null, user: userDetails },
+  };
 }

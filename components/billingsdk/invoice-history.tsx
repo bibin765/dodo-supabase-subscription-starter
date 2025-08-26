@@ -1,0 +1,200 @@
+"use client";
+
+import { cn } from "@/lib/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableCaption,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import {
+  CalendarDays,
+  CheckCircle,
+  CreditCard,
+  Download,
+  ReceiptText,
+  XCircle,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SelectPayment } from "@/lib/drizzle/schema";
+import Image from "next/image";
+
+interface InvoiceHistoryProps {
+  className?: string;
+  title?: string;
+  description?: string;
+  invoices: SelectPayment[];
+  onDownload?: (invoiceId: string) => void;
+}
+
+export function InvoiceHistory({
+  className,
+  title = "Invoice History",
+  description = "Your past invoices and payment receipts.",
+  invoices,
+  onDownload,
+}: InvoiceHistoryProps) {
+  if (!invoices) return null;
+
+  function getStatusBadge(status: string) {
+    const isSuccess = status === "succeeded";
+    return (
+      <Badge variant={isSuccess ? "default" : "secondary"}>
+        {isSuccess ? (
+          <CheckCircle className="h-3 w-3" />
+        ) : (
+          <XCircle className="h-3 w-3" />
+        )}
+        {isSuccess ? "Paid" : "Failed"}
+      </Badge>
+    );
+  }
+
+  function getPaymentMethodLogo(network: string | null) {
+    if (!network)
+      return (
+        <div className="flex h-6 w-10 items-center justify-center rounded bg-gray-200">
+          <CreditCard className="h-4 w-4 text-gray-600" />
+        </div>
+      );
+
+    switch (network.toUpperCase()) {
+      case "VISA":
+        return (
+          <Image src="/assets/visa.svg" alt="Visa" width={32} height={32} />
+        );
+      case "MASTERCARD":
+      case "MASTER":
+        return (
+          <Image src="/assets/mc.jpg" alt="Mastercard" width={32} height={32} />
+        );
+      case "AMEX":
+      case "AMERICAN_EXPRESS":
+        return (
+          <Image src="/assets/amex.png" alt="Amex" width={32} height={32} />
+        );
+      default:
+        return (
+          <div className="flex h-6 w-10 items-center justify-center rounded bg-gray-200">
+            <CreditCard className="h-4 w-4 text-gray-600" />
+          </div>
+        );
+    }
+  }
+
+  return (
+    <Card className={cn("w-full", className)}>
+      {(title || description) && (
+        <CardHeader className="space-y-1">
+          {title && (
+            <CardTitle className=" font-medium leading-tight truncate flex items-center gap-2 sm:gap-3 text-lg sm:text-xl">
+              <ReceiptText className="h-4 w-4 text-primary" />
+              {title}
+            </CardTitle>
+          )}
+          {description && (
+            <CardDescription className="text-sm text-muted-foreground">
+              {description}
+            </CardDescription>
+          )}
+        </CardHeader>
+      )}
+      <CardContent>
+        <Table>
+          <TableCaption className="sr-only">
+            List of past invoices with dates, amounts, status and download
+            actions
+          </TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[120px]">Date</TableHead>
+              <TableHead>Payment Id</TableHead>
+              <TableHead className="text-right">Amount</TableHead>
+              <TableHead className="text-right">Status</TableHead>
+              <TableHead className="text-right">Payment Method</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {invoices.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="h-24 text-center text-muted-foreground"
+                >
+                  No invoices yet
+                </TableCell>
+              </TableRow>
+            )}
+            {invoices.map((inv) => (
+              <TableRow key={inv.paymentId} className="group">
+                <TableCell className="text-muted-foreground">
+                  <div className="inline-flex items-center gap-2">
+                    <CalendarDays className="h-3.5 w-3.5" />
+                    {new Date(inv.createdAt).toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </div>
+                </TableCell>
+                <TableCell className="max-w-[320px]">
+                  <div className="truncate" title={inv.paymentId || "Invoice"}>
+                    {inv.paymentId || "Invoice"}
+                  </div>
+                </TableCell>
+                <TableCell className="text-right font-medium">
+                  ${Number(inv.totalAmount) / 100}
+                </TableCell>
+                <TableCell className="text-right">
+                  {getStatusBadge(inv.status)}
+                </TableCell>
+                <TableCell className="text-right">
+                  {inv.cardNetwork && inv.cardLastFour ? (
+                    <span className="font-medium flex items-center justify-end gap-2">
+                      {getPaymentMethodLogo(inv.cardNetwork)} {inv.cardLastFour}
+                    </span>
+                  ) : (
+                    <span className="font-medium">
+                      {inv.paymentMethod || "N/A"}
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className=" rounded-xl"
+                    onClick={() =>
+                      window.open(
+                        "https://test.dodopayments.com/invoices/payments/" +
+                          inv.paymentId,
+                        "_blank",
+                        "noopener,noreferrer"
+                      )
+                    }
+                    aria-label={`Download invoice ${inv.paymentId}`}
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Download
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}

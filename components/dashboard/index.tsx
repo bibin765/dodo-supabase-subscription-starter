@@ -6,27 +6,36 @@ import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 import { motion } from "framer-motion";
-import { LucideCreditCard, Settings } from "lucide-react";
-import { SubscriptionManagementTab } from "./subscription-management-tab";
+import {
+  CreditCard,
+  DollarSign,
+  LucideCreditCard,
+  Settings,
+  User2,
+  UserIcon,
+} from "lucide-react";
 import { ProductListResponse } from "dodopayments/resources/index.mjs";
+import { User } from "@supabase/supabase-js";
+import {
+  SelectPayment,
+  SelectSubscription,
+  SelectUser,
+} from "@/lib/drizzle/schema";
+import { InvoiceHistory } from "../billingsdk/invoice-history";
+import { toast } from "sonner";
+import { changePlan } from "@/actions/change-plan";
+import { SubscriptionManagement } from "../billingsdk/subscription-management";
+import { cancelSubscription } from "@/actions/cancel-subscription";
 
-export function ComponentsSection(props: { products: ProductListResponse[] }) {
-  return (
-    <div className="md:px-8 py-12 relative overflow-hidden w-full max-w-7xl mx-auto">
-      <div className="text-center">
-        <h2 className="text-3xl sm:text-3xl font-display md:text-4xl font-medium text-primary">
-          Manage your subscription
-        </h2>
-        <p className="text-sm mt-4 text-muted-foreground max-w-2xl mx-auto tracking-tight">
-          Manage your subscription and payments.
-        </p>
-      </div>
-      <ComponentsShowcase products={props.products} />
-    </div>
-  );
-}
-
-function ComponentsShowcase(props: { products: ProductListResponse[] }) {
+export function ComponentsSection(props: {
+  products: ProductListResponse[];
+  user: User;
+  userSubscription: {
+    subscription: SelectSubscription | null;
+    user: SelectUser;
+  };
+  invoices: SelectPayment[];
+}) {
   const [active, setActive] = useState("manage-subscription");
 
   const [borderPosition, setBorderPosition] = useState({
@@ -38,8 +47,9 @@ function ComponentsShowcase(props: { products: ProductListResponse[] }) {
   const tabsListRef = useRef<HTMLDivElement>(null);
 
   const components = [
-    { id: "manage-subscription", label: "Manage Subscription", icon: Settings },
-    { id: "payments", label: "Payments", icon: LucideCreditCard },
+    { id: "manage-subscription", label: "Billing", icon: CreditCard },
+    { id: "payments", label: "Invoices", icon: DollarSign },
+    { id: "account", label: "Account", icon: UserIcon },
   ];
 
   useEffect(() => {
@@ -89,78 +99,159 @@ function ComponentsShowcase(props: { products: ProductListResponse[] }) {
 
   const handleComponentClick = (componentId: string) => {
     if (componentId === active) return;
-
     handleTransition(componentId);
   };
 
+  const handlePlanChange = async (productId: string) => {
+    if (props.userSubscription.user.currentSubscriptionId) {
+      const res = await changePlan({
+        subscriptionId: props.userSubscription.user.currentSubscriptionId,
+        productId,
+      });
+
+      if (!res.success) {
+        toast.error(res.error);
+        return;
+      }
+
+      toast.success("Plan updated successfully");
+      window.location.reload();
+      return;
+    }
+
+    const redirectUrl = `${location.origin}/dashboard`;
+
+    const url = new URL(
+      process.env.DODO_PAYMENTS_ENVIRONMENT === "live"
+        ? `https://checkout.dodopayments.com/buy/${productId}`
+        : `https://test.checkout.dodopayments.com/buy/${productId}`
+    );
+
+    url.searchParams.set("redirect_url", redirectUrl);
+    url.searchParams.set("email", props.user.email ?? "");
+    url.searchParams.set("name", props.user.user_metadata.name ?? "");
+    url.searchParams.set("disableEmail", "true");
+
+    window.location.href = url.toString();
+  };
+
   return (
-    <div
-      id="components-showcase"
-      className="flex flex-col gap-3 my-auto w-full mt-5"
-    >
-      <div className="relative flex flex-col sm:flex-row w-full overflow-x-auto scrollbar-hide justify-start sm:justify-center">
-        <Tabs
-          value={active}
-          onValueChange={handleComponentClick}
-          className="w-full"
-        >
-          <div className="flex flex-col sm:flex-row gap-2 md:mx-auto my-auto relative">
-            <TabsList
-              ref={tabsListRef}
-              className="flex flex-col sm:flex-row gap-2 h-auto bg-background rounded-sm border relative p-0 w-full md:w-auto"
-            >
-              {components.map((item) => {
-                const IconComponent = item.icon;
-                return (
-                  <TabsTrigger
-                    key={item.id}
-                    value={item.id}
-                    className={cn(
-                      "flex flex-row gap-1 h-auto transition-all duration-200 p-2 w-full",
-                      "text-xs font-medium whitespace-nowrap border-0 rounded-none",
-                      "hover:bg-muted/50 w-full sm:w-auto justify-start sm:justify-center"
-                    )}
-                  >
-                    <IconComponent className="h-4 w-4" />
-                    <span className="hidden sm:inline text-[10px] leading-tight">
-                      {item.label.split(" ")[0]}
-                    </span>
-                    <span className="sm:hidden text-[10px] leading-tight">
-                      {item.label}
-                    </span>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-            <motion.div
-              className="absolute bg-white rounded-full"
-              animate={{
-                left: borderPosition.left,
-                top: borderPosition.top,
-                width: borderPosition.width,
-                height: borderPosition.height,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 30,
-              }}
-              style={{
-                position: "absolute",
-              }}
-            />
-          </div>
-
-          <div className="flex flex-col  bg-background rounded-lg shadow-lg w-full items-center justify-center mt-5">
-            <div className="w-full h-full transition-all duration-300 ease-in-out">
-              <TabsContent value="manage-subscription" className="mt-0">
-                <SubscriptionManagementTab products={props.products} />
-              </TabsContent>
-
-              <TabsContent value="payments" className="mt-0"></TabsContent>
+    <div className="md:px-8 py-12 relative overflow-hidden w-full max-w-7xl mx-auto">
+      <div className="text-center">
+        <h2 className="text-2xl sm:text-2xl font-display md:text-3xl font-medium text-primary">
+          Dodo Supabase subscription starter
+        </h2>
+        <p className="text-sm mt-4 text-muted-foreground max-w-2xl mx-auto tracking-tight">
+          Manage your subscription and payments with Dodo Payments and Supabase.
+        </p>
+      </div>
+      <div
+        id="components-showcase"
+        className="flex flex-col gap-3 my-auto w-full mt-5"
+      >
+        <div className="relative flex flex-col sm:flex-row w-full overflow-x-auto scrollbar-hide justify-start sm:justify-center">
+          <Tabs
+            value={active}
+            onValueChange={handleComponentClick}
+            className="w-full"
+          >
+            <div className="flex flex-col sm:flex-row gap-2 md:mx-auto my-auto relative">
+              <TabsList
+                ref={tabsListRef}
+                className="flex flex-col sm:flex-row gap-2 h-auto bg-background rounded-sm border relative p-0 w-full md:w-auto"
+              >
+                {components.map((item) => {
+                  const IconComponent = item.icon;
+                  return (
+                    <TabsTrigger
+                      key={item.id}
+                      value={item.id}
+                      className={cn(
+                        "flex flex-row gap-1 h-auto transition-all duration-200 p-2 w-full",
+                        "text-xs font-medium whitespace-nowrap border-0 rounded-none",
+                        "hover:bg-muted/50 w-full sm:w-auto justify-start sm:justify-center"
+                      )}
+                    >
+                      <IconComponent className="h-4 w-4" />
+                      <span className="hidden sm:inline text-[10px] leading-tight">
+                        {item.label.split(" ")[0]}
+                      </span>
+                      <span className="sm:hidden text-[10px] leading-tight">
+                        {item.label}
+                      </span>
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+              <motion.div
+                className="absolute bg-white rounded-full"
+                animate={{
+                  left: borderPosition.left,
+                  top: borderPosition.top,
+                  width: borderPosition.width,
+                  height: borderPosition.height,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 30,
+                }}
+                style={{
+                  position: "absolute",
+                }}
+              />
             </div>
-          </div>
-        </Tabs>
+
+            <div className="flex flex-col  bg-background rounded-lg shadow-lg w-full items-center justify-center mt-5">
+              <div className="w-full h-full transition-all duration-300 ease-in-out">
+                <TabsContent value="manage-subscription" className="mt-0">
+                  <SubscriptionManagement
+                    className="max-w-2xl mx-auto"
+                    products={props.products}
+                    currentPlan={props.userSubscription.subscription}
+                    updatePlan={{
+                      currentPlan: props.userSubscription.subscription,
+                      onPlanChange: handlePlanChange,
+                      triggerText: "Update Plan",
+                      products: props.products,
+                    }}
+                    cancelSubscription={{
+                      products: props.products,
+                      title: "Cancel Subscription",
+                      description:
+                        "Are you sure you want to cancel your subscription?",
+                      leftPanelImageUrl:
+                        "https://img.freepik.com/free-vector/abstract-paper-cut-shape-wave-background_474888-4649.jpg?semt=ais_hybrid&w=740&q=80",
+                      plan: props.userSubscription.subscription,
+                      warningTitle: "You will lose access to your account",
+                      warningText:
+                        "If you cancel your subscription, you will lose access to your account and all your data will be deleted.",
+                      onCancel: async (planId) => {
+                        if (props.userSubscription.subscription) {
+                          await cancelSubscription({
+                            subscriptionId:
+                              props.userSubscription.subscription
+                                .subscriptionId,
+                          });
+                        }
+                        toast.success("Subscription cancelled successfully");
+                        window.location.reload();
+                        return;
+                      },
+                      onKeepSubscription: async (planId) => {
+                        console.log("keep subscription", planId);
+                      },
+                    }}
+                  />
+                </TabsContent>
+
+                <TabsContent value="payments" className="mt-0">
+                  <InvoiceHistory invoices={props.invoices} />
+                </TabsContent>
+              </div>
+            </div>
+          </Tabs>
+        </div>
       </div>
     </div>
   );

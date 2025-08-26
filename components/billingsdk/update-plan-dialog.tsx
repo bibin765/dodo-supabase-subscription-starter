@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Toggle } from "@/components/ui/toggle";
 import { Label } from "@/components/ui/label";
-import { type Plan } from "@/lib/billingsdk-config";
+
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -17,10 +17,11 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { ProductListResponse } from "dodopayments/resources/index.mjs";
+import { SelectSubscription } from "@/lib/drizzle/schema";
+import { freePlan } from "@/lib/config/plans";
 
 export interface UpdatePlanDialogProps {
-  currentPlan: Plan;
-  plans: Plan[];
+  currentPlan: SelectSubscription | null;
   triggerText: string;
   onPlanChange: (planId: string) => void;
   className?: string;
@@ -30,7 +31,7 @@ export interface UpdatePlanDialogProps {
 
 export function UpdatePlanDialog({
   currentPlan,
-  plans,
+
   onPlanChange,
   className,
   title,
@@ -50,7 +51,9 @@ export function UpdatePlanDialog({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>{triggerText || "Update Plan"}</Button>
+        <Button disabled={!!currentPlan?.cancelAtNextBillingDate}>
+          {triggerText || "Update Plan"}
+        </Button>
       </DialogTrigger>
       <DialogContent
         className={cn(
@@ -83,6 +86,90 @@ export function UpdatePlanDialog({
         <div className="overflow-y-auto flex-1 min-h-0 space-y-3">
           <RadioGroup value={selectedPlan} onValueChange={handlePlanChange}>
             <AnimatePresence mode="wait">
+              <motion.div
+                key={freePlan.name}
+                onClick={() => handlePlanChange(freePlan.name)}
+                className={`p-4 rounded-lg border transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer ${
+                  selectedPlan === freePlan.name
+                    ? "border-primary bg-gradient-to-br from-muted/60 to-muted/30 shadow-md"
+                    : "border-border hover:border-primary/50"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex gap-3 min-w-0 flex-1">
+                    <RadioGroupItem
+                      value={freePlan.name}
+                      id={freePlan.name}
+                      className="flex-shrink-0 pointer-events-none"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Label
+                          htmlFor={freePlan.name}
+                          className="font-medium cursor-pointer"
+                        >
+                          {freePlan.name}
+                        </Label>
+
+                        <Badge variant="secondary" className="flex-shrink-0">
+                          {freePlan.currency}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {freePlan.description}
+                      </p>
+                      {freePlan.features.length > 0 && (
+                        <div className="pt-3">
+                          <div className="flex flex-wrap gap-2">
+                            {freePlan.features.map(
+                              (feature: string, featureIndex: number) => (
+                                <div
+                                  key={featureIndex}
+                                  className="flex items-center gap-2 px-2 py-1 rounded-lg bg-muted/20 border border-border/30 flex-shrink-0"
+                                >
+                                  <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                                  <span className="text-xs text-muted-foreground whitespace-nowrap">
+                                    {feature}
+                                  </span>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <div className="text-xl font-semibold">$0</div>
+                    <div className="text-xs text-muted-foreground">
+                      /{isYearly ? "year" : "month"}
+                    </div>
+                  </div>
+                </div>
+                <AnimatePresence>
+                  {selectedPlan === freePlan.name && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0, y: -10 }}
+                      animate={{ opacity: 1, height: "auto", y: 0 }}
+                      exit={{ opacity: 0, height: 0, y: -10 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                    >
+                      <Button
+                        className="w-full mt-4"
+                        disabled={true}
+                        onClick={() => {
+                          onPlanChange(freePlan.name);
+                          setIsOpen(false);
+                        }}
+                      >
+                        {currentPlan
+                          ? "Cancel Subscription to Downgrade"
+                          : "Current Plan"}
+                      </Button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
               {products &&
                 products
                   .filter((plan) => {
@@ -141,23 +228,28 @@ export function UpdatePlanDialog({
                             <p className="text-xs text-muted-foreground mt-1">
                               {plan.description}
                             </p>
-                            {/* {plan.features.length > 0 && (
-                          <div className="pt-3">
-                            <div className="flex flex-wrap gap-2">
-                              {plan.features.map((feature, featureIndex) => (
-                                <div
-                                  key={featureIndex}
-                                  className="flex items-center gap-2 px-2 py-1 rounded-lg bg-muted/20 border border-border/30 flex-shrink-0"
-                                >
-                                  <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
-                                  <span className="text-xs text-muted-foreground whitespace-nowrap">
-                                    {feature.name}
-                                  </span>
+                            {JSON.parse(plan.metadata?.features || "[]")
+                              .length > 0 && (
+                              <div className="pt-3">
+                                <div className="flex flex-wrap gap-2">
+                                  {JSON.parse(
+                                    plan.metadata?.features || "[]"
+                                  ).map(
+                                    (feature: string, featureIndex: number) => (
+                                      <div
+                                        key={featureIndex}
+                                        className="flex items-center gap-2 px-2 py-1 rounded-lg bg-muted/20 border border-border/30 flex-shrink-0"
+                                      >
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                                          {feature}
+                                        </span>
+                                      </div>
+                                    )
+                                  )}
                                 </div>
-                              ))}
-                            </div>
-                          </div>
-                        )} */}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0">
@@ -179,13 +271,13 @@ export function UpdatePlanDialog({
                           >
                             <Button
                               className="w-full mt-4"
-                              disabled={selectedPlan === currentPlan.id}
+                              disabled={selectedPlan === currentPlan?.productId}
                               onClick={() => {
                                 onPlanChange(plan.product_id);
                                 setIsOpen(false);
                               }}
                             >
-                              {selectedPlan === currentPlan.id
+                              {selectedPlan === currentPlan?.productId
                                 ? "Current Plan"
                                 : "Upgrade"}
                             </Button>

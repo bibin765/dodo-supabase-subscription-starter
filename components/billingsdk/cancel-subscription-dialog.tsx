@@ -10,14 +10,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { type Plan } from "@/lib/billingsdk-config";
+
 import { cn } from "@/lib/utils";
-import { X, Circle } from "lucide-react";
+import { Circle, X } from "lucide-react";
+import { SelectSubscription } from "@/lib/drizzle/schema";
+import { ProductListResponse } from "dodopayments/resources/index.mjs";
 
 export interface CancelSubscriptionDialogProps {
   title: string;
   description: string;
-  plan: Plan;
+  plan: SelectSubscription | null;
   triggerButtonText?: string;
   leftPanelImageUrl?: string;
   warningTitle?: string;
@@ -33,6 +35,7 @@ export interface CancelSubscriptionDialogProps {
   onKeepSubscription?: (planId: string) => Promise<void> | void;
   onDialogClose?: () => void;
   className?: string;
+  products: ProductListResponse[];
 }
 
 export function CancelSubscriptionDialog({
@@ -54,11 +57,15 @@ export function CancelSubscriptionDialog({
   onKeepSubscription,
   onDialogClose,
   className,
+  products,
 }: CancelSubscriptionDialogProps) {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const currentPlanDetails = products.find(
+    (product) => product.product_id === plan?.productId
+  );
 
   const handleContinueCancellation = () => {
     setShowConfirmation(true);
@@ -69,7 +76,9 @@ export function CancelSubscriptionDialog({
     try {
       setIsLoading(true);
       setError(null);
-      await onCancel(plan.id);
+      if (plan) {
+        await onCancel(plan.subscriptionId);
+      }
       handleDialogClose();
     } catch (err) {
       setError(
@@ -84,8 +93,8 @@ export function CancelSubscriptionDialog({
     try {
       setIsLoading(true);
       setError(null);
-      if (onKeepSubscription) {
-        await onKeepSubscription(plan.id);
+      if (onKeepSubscription && plan) {
+        await onKeepSubscription(plan.subscriptionId);
       }
       handleDialogClose();
     } catch (err) {
@@ -137,7 +146,7 @@ export function CancelSubscriptionDialog({
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button disabled={!!plan?.cancelAtNextBillingDate} variant="outline">
           {triggerButtonText || "Cancel Subscription"}
         </Button>
       </DialogTrigger>
@@ -191,27 +200,30 @@ export function CancelSubscriptionDialog({
               <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-1">
                   <span className="font-semibold text-lg">
-                    {plan.title} Plan
+                    {currentPlanDetails?.name} Plan
                   </span>
                   <span className="text-sm text-muted-foreground">
                     Current subscription
                   </span>
                 </div>
                 <Badge variant="secondary">
-                  {parseFloat(plan.monthlyPrice) >= 0
-                    ? `${plan.currency}${plan.monthlyPrice}/monthly`
-                    : `${plan.monthlyPrice}/monthly`}
+                  {currentPlanDetails?.price
+                    ? `$${Number(currentPlanDetails?.price) / 100}`
+                    : "Free"}
                 </Badge>
               </div>
               <div className="flex flex-col gap-2">
-                {plan.features.slice(0, 4).map((feature, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <Circle className="w-2 h-2 fill-primary text-primary" />
-                    <span className="text-sm text-muted-foreground">
-                      {feature.name}
-                    </span>
-                  </div>
-                ))}
+                {plan &&
+                  JSON.parse(currentPlanDetails?.metadata.features || "[]").map(
+                    (feature: string, index: number) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <Circle className="w-2 h-2 fill-primary text-primary" />
+                        <span className="text-sm text-muted-foreground">
+                          {feature}
+                        </span>
+                      </div>
+                    )
+                  )}
               </div>
             </div>
           )}

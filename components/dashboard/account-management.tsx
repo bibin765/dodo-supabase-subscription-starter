@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { LogOutIcon, Trash2Icon, UserIcon } from "lucide-react";
+import { LoaderCircle, LogOutIcon, Trash2Icon, UserIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { User } from "@supabase/supabase-js";
@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { deleteAccount } from "@/actions/delet-account";
 import { SelectSubscription, SelectUser } from "@/lib/drizzle/schema";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface AccountManagementProps {
   className?: string;
@@ -42,6 +44,7 @@ export function AccountManagement({
   user,
   userSubscription,
 }: AccountManagementProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const handleSignOut = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
@@ -49,9 +52,13 @@ export function AccountManagement({
   };
 
   const handleDeleteAccount = async () => {
+    setIsLoading(true);
     const res = await deleteAccount();
     if (res.success) {
+      toast.success("Account deleted successfully");
       window.location.reload();
+    } else {
+      toast.error(res.error);
     }
   };
 
@@ -101,10 +108,7 @@ export function AccountManagement({
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="text-red-500 hover:text-red-500 focus:text-red-500"
-                >
+                <Button variant="outline">
                   <Trash2Icon className="h-4 w-4" />
                   Delete Account
                 </Button>
@@ -119,8 +123,16 @@ export function AccountManagement({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <Button onClick={handleDeleteAccount} variant={"destructive"}>
-                    <Trash2Icon className="h-4 w-4" />
+                  <Button
+                    disabled={isLoading}
+                    onClick={handleDeleteAccount}
+                    variant={isLoading ? "secondary" : "destructive"}
+                  >
+                    {isLoading ? (
+                      <LoaderCircle className="size-4 animate-spin text-muted-foreground dark:text-muted-foreground " />
+                    ) : (
+                      <Trash2Icon className="h-4 w-4" />
+                    )}
                     Delete Account
                   </Button>
                 </AlertDialogFooter>

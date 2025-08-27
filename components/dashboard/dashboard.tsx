@@ -19,12 +19,10 @@ import { toast } from "sonner";
 import { changePlan } from "@/actions/change-plan";
 import { SubscriptionManagement } from "./subscription-management";
 import { cancelSubscription } from "@/actions/cancel-subscription";
-import Image from "next/image";
-import { Separator } from "../ui/separator";
 import { AccountManagement } from "./account-management";
 import Header from "../layout/header";
 
-export function ComponentsSection(props: {
+export function Dashboard(props: {
   products: ProductListResponse[];
   user: User;
   userSubscription: {
@@ -111,7 +109,8 @@ export function ComponentsSection(props: {
         return;
       }
 
-      toast.success("Plan updated successfully");
+      toast.success("Plan changed successfully");
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       window.location.reload();
       return;
     }

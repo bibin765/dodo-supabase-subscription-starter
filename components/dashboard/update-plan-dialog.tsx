@@ -2,7 +2,6 @@
 
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Toggle } from "@/components/ui/toggle";
 import { Label } from "@/components/ui/label";
@@ -10,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -20,11 +20,12 @@ import { ProductListResponse } from "dodopayments/resources/index.mjs";
 import { SelectSubscription } from "@/lib/drizzle/schema";
 import { freePlan } from "@/lib/config/plans";
 import TailwindBadge from "@/components/ui/tailwind-badge";
+import { Loader, LoaderCircle, X } from "lucide-react";
 
 export interface UpdatePlanDialogProps {
   currentPlan: SelectSubscription | null;
   triggerText: string;
-  onPlanChange: (planId: string) => void;
+  onPlanChange: (planId: string) => Promise<void> | void;
   className?: string;
   title?: string;
   products: ProductListResponse[];
@@ -45,25 +46,35 @@ export function UpdatePlanDialog({
     currentPlan ? currentPlan.productId : undefined
   );
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handlePlanChange = (planId: string) => {
     setSelectedPlan(planId);
   };
 
+  const handleDialogClose = () => {
+    setIsOpen(false);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button disabled={!!currentPlan?.cancelAtNextBillingDate}>
+        <Button
+          size="sm"
+          className="rounded-xl"
+          disabled={!!currentPlan?.cancelAtNextBillingDate}
+        >
           {triggerText}
         </Button>
       </DialogTrigger>
       <DialogContent
+        showCloseButton={false}
         className={cn(
-          "space-y-3 max-h-[90vh] flex flex-col text-foreground",
+          "space-y-3 max-h-[90vh] p-4  flex flex-col text-foreground gap-1",
           className
         )}
       >
-        <DialogHeader className="flex flex-row items-center justify-between py-2">
+        <DialogHeader className="flex flex-row items-center justify-between ">
           <DialogTitle className="text-base font-semibold">
             {title || "Upgrade Plan"}
           </DialogTitle>
@@ -83,6 +94,12 @@ export function UpdatePlanDialog({
             >
               Yearly
             </Toggle>
+            <DialogClose asChild onClick={handleDialogClose}>
+              <Button variant="ghost" className="rounded-md" size="icon">
+                <X className="h-4 w-4" />
+                <span className="sr-only">Close</span>
+              </Button>
+            </DialogClose>
           </div>
         </DialogHeader>
         <div className="overflow-y-auto flex-1 min-h-0 space-y-3">
@@ -91,7 +108,7 @@ export function UpdatePlanDialog({
               <motion.div
                 key={freePlan.name}
                 onClick={() => handlePlanChange(freePlan.name)}
-                className={`p-4 rounded-lg border transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer ${
+                className={`p-4  rounded-lg border transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer ${
                   selectedPlan === freePlan.name
                     ? "border-primary bg-gradient-to-br from-muted/60 to-muted/30 shadow-md"
                     : "border-border hover:border-primary/50"
@@ -102,7 +119,7 @@ export function UpdatePlanDialog({
                     <RadioGroupItem
                       value={freePlan.name}
                       id={freePlan.name}
-                      className="flex-shrink-0 pointer-events-none"
+                      className="flex-shrink-0 pointer-events-none  w-fit"
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -159,8 +176,8 @@ export function UpdatePlanDialog({
                       <Button
                         className="w-full mt-4"
                         disabled={true}
-                        onClick={() => {
-                          onPlanChange(freePlan.name);
+                        onClick={async () => {
+                          await onPlanChange(freePlan.name);
                           setIsOpen(false);
                         }}
                       >
@@ -277,12 +294,20 @@ export function UpdatePlanDialog({
                           >
                             <Button
                               className="w-full mt-4"
-                              disabled={selectedPlan === currentPlan?.productId}
-                              onClick={() => {
-                                onPlanChange(plan.product_id);
+                              disabled={
+                                selectedPlan === currentPlan?.productId ||
+                                isLoading
+                              }
+                              onClick={async () => {
+                                setIsLoading(true);
+                                await onPlanChange(plan.product_id);
+                                setIsLoading(false);
                                 setIsOpen(false);
                               }}
                             >
+                              {isLoading && (
+                                <LoaderCircle className="size-4 animate-spin text-muted-foreground dark:text-muted-foreground " />
+                              )}
                               {selectedPlan === currentPlan?.productId
                                 ? "Current Plan"
                                 : currentPlan

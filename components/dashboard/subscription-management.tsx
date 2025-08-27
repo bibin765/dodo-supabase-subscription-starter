@@ -23,6 +23,7 @@ import { ProductListResponse } from "dodopayments/resources/index.mjs";
 import { SelectSubscription } from "@/lib/drizzle/schema";
 import { freePlan } from "@/lib/config/plans";
 import TailwindBadge from "../ui/tailwind-badge";
+import { RestoreSubscriptionDialog } from "./restore-subscription-dialog";
 
 interface SubscriptionManagementProps {
   className?: string;
@@ -96,6 +97,26 @@ export function SubscriptionManagement({
                       {currentPlanDetails?.description || freePlan.description}
                     </p>
                   </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                    <UpdatePlanDialog
+                      className="mx-0 shadow-lg hover:shadow-xl transition-all duration-200"
+                      {...updatePlan}
+                    />
+
+                    {currentPlan && !currentPlan.cancelAtNextBillingDate && (
+                      <CancelSubscriptionDialog
+                        className="mx-0 shadow-lg hover:shadow-xl transition-all duration-200"
+                        {...cancelSubscription}
+                      />
+                    )}
+
+                    {currentPlan && currentPlan.cancelAtNextBillingDate && (
+                      <RestoreSubscriptionDialog
+                        subscriptionId={currentPlan.subscriptionId}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -129,7 +150,7 @@ export function SubscriptionManagement({
                 <div className="group p-2.5 sm:p-3 rounded-lg md:bg-gradient-to-tl bg-gradient-to-b from-muted to-background/10 border border-border/30 hover:border-border/60 transition-all duration-200">
                   <span className="text-xs sm:text-sm text-muted-foreground block mb-1">
                     {currentPlan.cancelAtNextBillingDate
-                      ? "Cancels at"
+                      ? "Cancels on"
                       : "Next billing date"}
                   </span>
                   <div className="font-medium text-sm sm:text-base group-hover:text-primary transition-colors duration-200">
@@ -148,20 +169,6 @@ export function SubscriptionManagement({
           )}
 
           <Separator className="my-4 sm:my-6 bg-gradient-to-r from-transparent via-border to-transparent" />
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            <UpdatePlanDialog
-              className="mx-0 shadow-lg hover:shadow-xl transition-all duration-200"
-              {...updatePlan}
-            />
-
-            {currentPlan && (
-              <CancelSubscriptionDialog
-                className="mx-0 shadow-lg hover:shadow-xl transition-all duration-200"
-                {...cancelSubscription}
-              />
-            )}
-          </div>
 
           <div className="">
             <h4 className="font-medium mb-3 sm:mb-4 text-base sm:text-lg">

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { cn } from "@/lib/utils";
-import { Circle, X } from "lucide-react";
+import { Circle, LoaderCircle, X } from "lucide-react";
 import { SelectSubscription } from "@/lib/drizzle/schema";
 import { ProductListResponse } from "dodopayments/resources/index.mjs";
 import TailwindBadge from "../ui/tailwind-badge";
@@ -146,7 +146,12 @@ export function CancelSubscriptionDialog({
       }}
     >
       <DialogTrigger asChild>
-        <Button disabled={!!plan?.cancelAtNextBillingDate} variant="outline">
+        <Button
+          size="sm"
+          className="rounded-xl"
+          disabled={!!plan?.cancelAtNextBillingDate}
+          variant="outline"
+        >
           Cancel Subscription
         </Button>
       </DialogTrigger>
@@ -274,14 +279,15 @@ export function CancelSubscriptionDialog({
                   {goBackButtonText || "Go Back"}
                 </Button>
                 <Button
-                  variant="destructive"
+                  variant={isLoading ? "secondary" : "destructive"}
                   className="flex-1"
                   onClick={handleConfirmCancellation}
                   disabled={isLoading}
                 >
-                  {isLoading
-                    ? "Cancelling..."
-                    : confirmButtonText || "Yes, Cancel Subscription"}
+                  {isLoading && (
+                    <LoaderCircle className="size-4 animate-spin text-muted-foreground dark:text-muted-foreground" />
+                  )}
+                  {confirmButtonText || "Yes, Cancel Subscription"}
                 </Button>
               </div>
             </div>

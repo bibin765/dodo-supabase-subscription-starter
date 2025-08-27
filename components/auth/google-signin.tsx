@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { useState } from "react";
-import { Loader } from "lucide-react";
+import { Loader, LoaderCircle } from "lucide-react";
 
 export default function GoogleSignIn() {
   const supabase = createClient();
@@ -24,11 +24,11 @@ export default function GoogleSignIn() {
   return (
     <Button
       variant="outline"
-      className=" flex flex-row gap-2 items-center justify-center rounded-xl"
+      className=" flex flex-row gap-2 w-48 items-center justify-center rounded-xl"
       onClick={handleLogin}
     >
       {loading ? (
-        <Loader className="size-4 animate-spin" />
+        <LoaderCircle className="size-4 animate-spin text-muted-foreground dark:text-muted-foreground " />
       ) : (
         <Image src="/assets/google.png" alt="Google" width={16} height={16} />
       )}

@@ -6,18 +6,18 @@ import { subscriptions } from "@/lib/drizzle/schema";
 import { ServerActionRes } from "@/types/server-action";
 import { eq } from "drizzle-orm";
 
-export async function cancelSubscription(props: {
+export async function restoreSubscription(props: {
   subscriptionId: string;
 }): ServerActionRes {
   try {
-    const res = await dodoClient.subscriptions.update(props.subscriptionId, {
-      cancel_at_next_billing_date: true,
+    await dodoClient.subscriptions.update(props.subscriptionId, {
+      cancel_at_next_billing_date: false,
     });
 
     await db
       .update(subscriptions)
       .set({
-        cancelAtNextBillingDate: true,
+        cancelAtNextBillingDate: false,
       })
       .where(eq(subscriptions.subscriptionId, props.subscriptionId));
 

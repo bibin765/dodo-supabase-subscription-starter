@@ -1,6 +1,6 @@
 import { getUser } from "@/actions/get-user";
 import { getProducts } from "@/actions/get-products";
-import { ComponentsSection } from "@/components/dashboard/dashboard";
+import { Dashboard } from "@/components/dashboard/dashboard";
 import { redirect } from "next/navigation";
 import React from "react";
 import { getUserSubscription } from "@/actions/get-user-subscription";
@@ -30,7 +30,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="px-2">
-      <ComponentsSection
+      <Dashboard
         products={productRes.data}
         user={userRes.data}
         userSubscription={userSubscriptionRes.data}

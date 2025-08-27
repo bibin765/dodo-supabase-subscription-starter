@@ -1,7 +1,6 @@
 "use server";
 
 import { dodoClient } from "@/lib/dodo-payments/client";
-import { createClient } from "@/lib/supabase/server";
 import { ServerActionRes } from "@/types/server-action";
 import { Customer } from "dodopayments/resources/index.mjs";
 

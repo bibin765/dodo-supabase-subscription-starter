@@ -17,7 +17,11 @@ This boilerplate helps you quickly set up a subscription-based SaaS with authent
 
 ## 📦 Getting Started
 
-### 1. Install dependencies
+### 1. Create a Supabase Project
+
+Go to [Supabase](https://app.supabase.com) and create a new project. Copy the **Project URL** and **Anon Key** from your project settings → API section. These will be used in your environment variables. Then, enable Google OAuth by adding the OAuth client ID and secret from the Google Cloud Console.
+
+### 2. Install dependencies
 
 ```bash
 bun i
@@ -27,7 +31,7 @@ npm install
 pnpm install
 ```
 
-### 2. Configure environment variables
+### 3. Configure environment variables
 
 Copy `.env.example` to `.env.local` and fill in your values:
 
@@ -40,7 +44,7 @@ DODO_WEBHOOK_SECRET=
 DODO_PAYMENTS_ENVIRONMENT= # "test_mode" or "live_mode"
 ```
 
-### 3. Push database schema
+### 4. Push database schema
 
 ```bash
 bun db:push
@@ -50,7 +54,7 @@ npm run db:push
 pnpm db:push
 ```
 
-### 4. Deploy Supabase function (for handling webhooks)
+### 5. Deploy Supabase function (for handling webhooks)
 
 ```bash
 bun deploy:webhook --project-ref [projectId]
@@ -60,9 +64,17 @@ npm run deploy:webhook -- --project-ref [projectId]
 pnpm deploy:webhook --project-ref [projectId]
 ```
 
-### 5. Add webhook in Dodo Payments
+### 6. Add webhook in Dodo Payments
 
 In your **Dodo Payments dashboard**, configure the webhook URL pointing to your deployed Supabase function.
+
+---
+
+## ▲ Deploy with Vercel
+
+You can deploy this project instantly using the button below:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/darshansrc/dodo-supabase-subscription-starter&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,DATABASE_URL,DODO_PAYMENTS_API_KEY,DODO_WEBHOOK_SECRET,DODO_PAYMENTS_ENVIRONMENT)
 
 ---
 

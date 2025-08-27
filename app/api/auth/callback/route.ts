@@ -15,7 +15,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(
-    `${process.env.NEXT_PUBLIC_APP_URL}/login?error=Could not authenticate`
-  );
+  return NextResponse.redirect(`${origin}/login?error=Could not authenticate`);
 }

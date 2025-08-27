@@ -116,7 +116,7 @@ export function ComponentsSection(props: {
       return;
     }
 
-    const url = new URL(`${process.env.NEXT_PUBLIC_APP_URL}/checkout`);
+    const url = new URL(`${window.location.origin}/checkout`);
 
     url.searchParams.set("email", props.user.email ?? "");
     url.searchParams.set("disableEmail", "true");

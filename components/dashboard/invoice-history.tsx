@@ -148,7 +148,12 @@ export function InvoiceHistory({
                   </div>
                 </TableCell>
                 <TableCell className="text-right font-medium">
-                  ${Number(inv.totalAmount) / 100}
+                  {inv.currency === "USD"
+                    ? "$"
+                    : inv.currency === "INR"
+                    ? "₹"
+                    : `${inv.currency} `}
+                  {Number(inv.totalAmount) / 100}
                 </TableCell>
                 <TableCell className="text-right">
                   {getStatusBadge(inv.status)}
@@ -171,9 +176,9 @@ export function InvoiceHistory({
                     className="rounded-xl"
                     onClick={() => {
                       const url =
-                        process.env.DODO_PAYMENTS_ENVIRONMENT === "test_mode"
-                          ? "https://test.dodopayments.com"
-                          : "https://live.dodopayments.com";
+                        process.env.DODO_PAYMENTS_ENVIRONMENT === "live_mode"
+                          ? "https://live.dodopayments.com"
+                          : "https://test.dodopayments.com";
                       window.open(
                         `${url}/invoices/payments/${inv.paymentId}`,
                         "_blank"

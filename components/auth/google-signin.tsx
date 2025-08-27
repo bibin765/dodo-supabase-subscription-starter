@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Loader } from "lucide-react";
 
-export default function GoogleSignInButton() {
+export default function GoogleSignIn() {
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
 
@@ -14,6 +14,7 @@ export default function GoogleSignInButton() {
     setLoading(true);
     await supabase.auth.signInWithOAuth({
       provider: "google",
+
       options: {
         redirectTo: `${window.location.origin}/api/auth/callback`,
       },

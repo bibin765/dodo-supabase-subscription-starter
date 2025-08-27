@@ -19,7 +19,7 @@ import { useState } from "react";
 import { ProductListResponse } from "dodopayments/resources/index.mjs";
 import { SelectSubscription } from "@/lib/drizzle/schema";
 import { freePlan } from "@/lib/config/plans";
-import TailwindBadge from "./ui/tailwind-badge";
+import TailwindBadge from "@/components/ui/tailwind-badge";
 
 export interface UpdatePlanDialogProps {
   currentPlan: SelectSubscription | null;

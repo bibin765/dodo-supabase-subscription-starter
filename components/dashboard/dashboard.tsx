@@ -20,9 +20,9 @@ import { changePlan } from "@/actions/change-plan";
 import { SubscriptionManagement } from "./subscription-management";
 import { cancelSubscription } from "@/actions/cancel-subscription";
 import Image from "next/image";
-import { Separator } from "./ui/separator";
+import { Separator } from "../ui/separator";
 import { AccountManagement } from "./account-management";
-import Header from "./layout/header";
+import Header from "../layout/header";
 
 export function ComponentsSection(props: {
   products: ProductListResponse[];

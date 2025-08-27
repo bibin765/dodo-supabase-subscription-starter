@@ -1,6 +1,6 @@
 import { getUser } from "@/actions/get-user";
 import { getProducts } from "@/actions/get-products";
-import { ComponentsSection } from "@/components/dashboard";
+import { ComponentsSection } from "@/components/dashboard/dashboard";
 import { redirect } from "next/navigation";
 import React from "react";
 import { getUserSubscription } from "@/actions/get-user-subscription";

@@ -13,7 +13,6 @@ export default function Header() {
           height={32}
         />
         <Separator orientation="vertical" />
-
         <Image
           src="/assets/supabase.svg"
           alt="Supabase"

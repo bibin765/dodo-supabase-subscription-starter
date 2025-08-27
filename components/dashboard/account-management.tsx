@@ -12,8 +12,8 @@ import { LogOutIcon, Trash2Icon, UserIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { User } from "@supabase/supabase-js";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import {
   AlertDialog,

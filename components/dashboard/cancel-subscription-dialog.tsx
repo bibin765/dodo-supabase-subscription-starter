@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogClose,
@@ -15,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { Circle, X } from "lucide-react";
 import { SelectSubscription } from "@/lib/drizzle/schema";
 import { ProductListResponse } from "dodopayments/resources/index.mjs";
-import TailwindBadge from "./ui/tailwind-badge";
+import TailwindBadge from "../ui/tailwind-badge";
 
 export interface CancelSubscriptionDialogProps {
   title: string;
@@ -148,12 +147,12 @@ export function CancelSubscriptionDialog({
     >
       <DialogTrigger asChild>
         <Button disabled={!!plan?.cancelAtNextBillingDate} variant="outline">
-          {triggerButtonText || "Cancel Subscription"}
+          Cancel Subscription
         </Button>
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "sm:max-w-[1000px] flex flex-col md:flex-row p-0 overflow-hidden text-foreground w-[95%] md:w-[100%]",
+          " flex flex-col md:flex-row p-0 overflow-hidden text-foreground ",
           leftPanelImageUrl ? "" : "sm:max-w-[500px]",
           className
         )}
@@ -166,23 +165,8 @@ export function CancelSubscriptionDialog({
           <X className="h-4 w-4" />
           <span className="sr-only">Close</span>
         </DialogClose>
-        {leftPanelImageUrl && (
-          <div className="w-full md:w-1/2 min-h-[500px] relative hidden md:block overflow-hidden">
-            <img
-              src={leftPanelImageUrl}
-              alt="Cancel Subscription"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-background/30 to-background/90 dark:block hidden"></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-background/20 dark:block hidden"></div>
-          </div>
-        )}
-        <div
-          className={cn(
-            "py-6 px-4 flex flex-col gap-4",
-            leftPanelImageUrl ? "w-full md:w-1/2" : "w-full"
-          )}
-        >
+
+        <div className={cn("py-6 px-4 flex flex-col gap-4")}>
           <div className="flex flex-col gap-2 text-center md:text-left">
             <h2 className="md:text-2xl text-xl font-semibold">{title}</h2>
             <p className="md:text-sm text-xs text-muted-foreground">

@@ -31,7 +31,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SelectPayment } from "@/lib/drizzle/schema";
 import Image from "next/image";
-import TailwindBadge from "./ui/tailwind-badge";
+import TailwindBadge from "../ui/tailwind-badge";
 
 interface InvoiceHistoryProps {
   className?: string;
@@ -115,10 +115,9 @@ export function InvoiceHistory({
           <TableHeader>
             <TableRow>
               <TableHead>Date</TableHead>
-              {/* <TableHead>Payment Id</TableHead> */}
               <TableHead className="text-right">Amount</TableHead>
               <TableHead className="text-right">Status</TableHead>
-              <TableHead className="text-right">Method</TableHead>
+              <TableHead className="text-right">Payment Method</TableHead>
               <TableHead className="text-right">Invoice</TableHead>
             </TableRow>
           </TableHeader>
@@ -142,14 +141,12 @@ export function InvoiceHistory({
                       month: "long",
                       day: "numeric",
                       year: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                      hour12: true,
                     })}
                   </div>
                 </TableCell>
-                {/* <TableCell>
-                  <div className="truncate" title={inv.paymentId || "Invoice"}>
-                    {inv.paymentId || "Invoice"}
-                  </div>
-                </TableCell> */}
                 <TableCell className="text-right font-medium">
                   ${Number(inv.totalAmount) / 100}
                 </TableCell>
@@ -171,15 +168,17 @@ export function InvoiceHistory({
                   <Button
                     variant="outline"
                     size="sm"
-                    className=" rounded-xl"
-                    onClick={() =>
+                    className="rounded-xl"
+                    onClick={() => {
+                      const url =
+                        process.env.DODO_PAYMENTS_ENVIRONMENT === "test_mode"
+                          ? "https://test.dodopayments.com"
+                          : "https://live.dodopayments.com";
                       window.open(
-                        "https://test.dodopayments.com/invoices/payments/" +
-                          inv.paymentId,
-                        "_blank",
-                        "noopener,noreferrer"
-                      )
-                    }
+                        `${url}/invoices/payments/${inv.paymentId}`,
+                        "_blank"
+                      );
+                    }}
                     aria-label={`Download invoice ${inv.paymentId}`}
                   >
                     <Download className="h-3.5 w-3.5" />

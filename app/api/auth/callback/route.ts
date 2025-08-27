@@ -12,8 +12,12 @@ export async function GET(request: Request) {
     if (!error && data.session) {
       await createUser();
       return NextResponse.redirect(`${origin}/dashboard`);
+    } else {
+      return NextResponse.redirect(
+        `${origin}/login?error=${error?.message || "Could not authenticate"}`
+      );
     }
   }
 
-  return NextResponse.redirect(`${origin}/login?error=Could not authenticate`);
+  return NextResponse.redirect(`${origin}/login?error=Unknown error`);
 }

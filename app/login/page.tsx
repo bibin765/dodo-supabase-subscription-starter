@@ -1,6 +1,7 @@
 import { getUser } from "@/actions/get-user";
-import GoogleSignInButton from "@/components/auth/google-oauth-button";
+import GoogleSignIn from "@/components/auth/google-signin";
 import Header from "@/components/layout/header";
+import TailwindBadge from "@/components/ui/tailwind-badge";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -19,7 +20,12 @@ export default async function Page(props: {
   return (
     <div className="flex flex-col items-center justify-center h-screen px-4 gap-10">
       <Header />
-      <GoogleSignInButton />
+      {error && (
+        <TailwindBadge variant="red" className="mt-20">
+          {error}
+        </TailwindBadge>
+      )}
+      <GoogleSignIn />
     </div>
   );
 }

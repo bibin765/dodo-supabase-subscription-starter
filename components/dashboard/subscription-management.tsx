@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, CreditCard } from "lucide-react";
 
@@ -15,15 +14,15 @@ import { cn } from "@/lib/utils";
 import {
   CancelSubscriptionDialog,
   type CancelSubscriptionDialogProps,
-} from "@/components/cancel-subscription-dialog";
+} from "@/components/dashboard/cancel-subscription-dialog";
 import {
   UpdatePlanDialog,
   type UpdatePlanDialogProps,
-} from "@/components/update-plan-dialog";
+} from "@/components/dashboard/update-plan-dialog";
 import { ProductListResponse } from "dodopayments/resources/index.mjs";
 import { SelectSubscription } from "@/lib/drizzle/schema";
 import { freePlan } from "@/lib/config/plans";
-import TailwindBadge from "./ui/tailwind-badge";
+import TailwindBadge from "../ui/tailwind-badge";
 
 interface SubscriptionManagementProps {
   className?: string;
@@ -56,10 +55,10 @@ export function SubscriptionManagement({
             <div className="p-1.5  rounded-lg bg-primary/10 ring-1 ring-primary/20">
               <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
-            Current Subscription
+            Billing
           </CardTitle>
           <CardDescription className="text-sm sm:text-base">
-            Manage your billing and subscription settings
+            Manage your current subscription and billing information
           </CardDescription>
         </CardHeader>
 

@@ -110,7 +110,7 @@ export function Dashboard(props: {
       }
 
       toast.success("Plan changed successfully");
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       window.location.reload();
       return;
     }

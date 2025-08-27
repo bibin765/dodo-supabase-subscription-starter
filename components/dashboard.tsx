@@ -6,14 +6,7 @@ import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 import { motion } from "framer-motion";
-import {
-  CreditCard,
-  DollarSign,
-  LucideCreditCard,
-  Settings,
-  User2,
-  UserIcon,
-} from "lucide-react";
+import { CreditCard, ReceiptText, UserIcon } from "lucide-react";
 import { ProductListResponse } from "dodopayments/resources/index.mjs";
 import { User } from "@supabase/supabase-js";
 import {
@@ -21,13 +14,15 @@ import {
   SelectSubscription,
   SelectUser,
 } from "@/lib/drizzle/schema";
-import { InvoiceHistory } from "../billingsdk/invoice-history";
+import { InvoiceHistory } from "./invoice-history";
 import { toast } from "sonner";
 import { changePlan } from "@/actions/change-plan";
-import { SubscriptionManagement } from "../billingsdk/subscription-management";
+import { SubscriptionManagement } from "./subscription-management";
 import { cancelSubscription } from "@/actions/cancel-subscription";
 import Image from "next/image";
-import { Separator } from "../ui/separator";
+import { Separator } from "./ui/separator";
+import { AccountManagement } from "./account-management";
+import Header from "./layout/header";
 
 export function ComponentsSection(props: {
   products: ProductListResponse[];
@@ -50,7 +45,7 @@ export function ComponentsSection(props: {
 
   const components = [
     { id: "manage-subscription", label: "Billing", icon: CreditCard },
-    { id: "payments", label: "Invoices", icon: DollarSign },
+    { id: "payments", label: "Invoices", icon: ReceiptText },
     { id: "account", label: "Account", icon: UserIcon },
   ];
 
@@ -121,48 +116,20 @@ export function ComponentsSection(props: {
       return;
     }
 
-    const redirectUrl = `${location.origin}/dashboard`;
+    const url = new URL(`${process.env.NEXT_PUBLIC_APP_URL}/checkout`);
 
-    const url = new URL(
-      process.env.DODO_PAYMENTS_ENVIRONMENT === "live"
-        ? `https://checkout.dodopayments.com/buy/${productId}`
-        : `https://test.checkout.dodopayments.com/buy/${productId}`
-    );
-
-    url.searchParams.set("redirect_url", redirectUrl);
     url.searchParams.set("email", props.user.email ?? "");
-    url.searchParams.set("name", props.user.user_metadata.name ?? "");
     url.searchParams.set("disableEmail", "true");
-
+    url.searchParams.set("productId", productId);
+    if (props.user.user_metadata.full_name) {
+      url.searchParams.set("fullName", props.user.user_metadata.full_name);
+    }
     window.location.href = url.toString();
   };
 
   return (
     <div className="md:px-8 py-12 relative overflow-hidden w-full max-w-7xl mx-auto">
-      <div className="text-center">
-        <div className="flex flex-row my-4  items-center h-8 justify-center gap-4 ">
-          <Image
-            src="/assets/dodo.svg"
-            alt="Dodo Payments"
-            width={32}
-            height={32}
-          />
-          <Separator orientation="vertical" />
-
-          <Image
-            src="/assets/supabase.svg"
-            alt="Supabase"
-            width={32}
-            height={32}
-          />
-        </div>
-        <h2 className="text-xl font-display md:text-2xl font-medium text-primary">
-          Dodo Supabase subscription starter
-        </h2>
-        <p className="text-sm mt-2 text-muted-foreground max-w-xl mx-auto tracking-tight">
-          Manage your subscription and payments with Dodo Payments and Supabase.
-        </p>
-      </div>
+      <Header />
       <div
         id="components-showcase"
         className="flex flex-col gap-3 my-auto w-full mt-5"
@@ -230,7 +197,10 @@ export function ComponentsSection(props: {
                     updatePlan={{
                       currentPlan: props.userSubscription.subscription,
                       onPlanChange: handlePlanChange,
-                      triggerText: "Update Plan",
+                      triggerText: props.userSubscription.user
+                        .currentSubscriptionId
+                        ? "Change Plan"
+                        : "Upgrade Plan",
                       products: props.products,
                     }}
                     cancelSubscription={{
@@ -265,6 +235,14 @@ export function ComponentsSection(props: {
 
                 <TabsContent value="payments" className="mt-0">
                   <InvoiceHistory invoices={props.invoices} />
+                </TabsContent>
+
+                <TabsContent value="account" className="mt-0">
+                  <AccountManagement
+                    className="max-w-2xl mx-auto"
+                    user={props.user}
+                    userSubscription={props.userSubscription}
+                  />
                 </TabsContent>
               </div>
             </div>

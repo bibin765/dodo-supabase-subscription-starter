@@ -21,6 +21,10 @@ export const users = pgTable("users", {
     mode: "string",
     withTimezone: true,
   }).notNull(),
+  deletedAt: timestamp("deleted_at", {
+    mode: "string",
+    withTimezone: true,
+  }),
 });
 
 export const subscriptions = pgTable("subscriptions", {

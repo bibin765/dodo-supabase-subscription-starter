@@ -15,14 +15,15 @@ import { cn } from "@/lib/utils";
 import {
   CancelSubscriptionDialog,
   type CancelSubscriptionDialogProps,
-} from "@/components/billingsdk/cancel-subscription-dialog";
+} from "@/components/cancel-subscription-dialog";
 import {
   UpdatePlanDialog,
   type UpdatePlanDialogProps,
-} from "@/components/billingsdk/update-plan-dialog";
+} from "@/components/update-plan-dialog";
 import { ProductListResponse } from "dodopayments/resources/index.mjs";
 import { SelectSubscription } from "@/lib/drizzle/schema";
 import { freePlan } from "@/lib/config/plans";
+import TailwindBadge from "./ui/tailwind-badge";
 
 interface SubscriptionManagementProps {
   className?: string;
@@ -51,8 +52,8 @@ export function SubscriptionManagement({
     <div className={cn("text-left w-full", className)}>
       <Card className="shadow-lg">
         <CardHeader className=" px-4 sm:px-6">
-          <CardTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl">
-            <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10 ring-1 ring-primary/20">
+          <CardTitle className="flex items-center gap-2  text-lg sm:text-xl">
+            <div className="p-1.5  rounded-lg bg-primary/10 ring-1 ring-primary/20">
               <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
             Current Subscription
@@ -76,20 +77,18 @@ export function SubscriptionManagement({
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       {currentPlan && (
-                        <Badge
+                        <TailwindBadge
                           variant={
-                            currentPlan.status === "active"
-                              ? "default"
-                              : "outline"
+                            currentPlan.status === "active" ? "green" : "red"
                           }
                         >
                           {currentPlan.status}
-                        </Badge>
+                        </TailwindBadge>
                       )}
                       {currentPlan && currentPlan.cancelAtNextBillingDate && (
-                        <Badge variant={"destructive"}>
+                        <TailwindBadge variant={"red"}>
                           Scheduled for cancellation
-                        </Badge>
+                        </TailwindBadge>
                       )}
                     </div>
                   </div>
@@ -115,7 +114,19 @@ export function SubscriptionManagement({
                 </div>
                 Billing Information
               </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="group p-2.5 sm:p-3 rounded-lg md:bg-gradient-to-tr bg-gradient-to-b from-muted to-background/10 border border-border/30 hover:border-border/60 transition-all duration-200">
+                  <span className="text-xs sm:text-sm text-muted-foreground block mb-1">
+                    Price
+                  </span>
+                  <div className="font-medium text-sm sm:text-base group-hover:text-primary transition-colors duration-200">
+                    {currentPlan.paymentPeriodInterval === "Month"
+                      ? `$${Number(currentPlanDetails?.price) / 100} / month`
+                      : currentPlan.paymentPeriodInterval === "Year"
+                      ? `$${Number(currentPlanDetails?.price) / 100} / year`
+                      : `$${Number(currentPlanDetails?.price) / 100}`}
+                  </div>
+                </div>
                 <div className="group p-2.5 sm:p-3 rounded-lg md:bg-gradient-to-tl bg-gradient-to-b from-muted to-background/10 border border-border/30 hover:border-border/60 transition-all duration-200">
                   <span className="text-xs sm:text-sm text-muted-foreground block mb-1">
                     {currentPlan.cancelAtNextBillingDate
@@ -131,18 +142,6 @@ export function SubscriptionManagement({
                         year: "numeric",
                       }
                     )}
-                  </div>
-                </div>
-                <div className="group p-2.5 sm:p-3 rounded-lg md:bg-gradient-to-tr bg-gradient-to-b from-muted to-background/10 border border-border/30 hover:border-border/60 transition-all duration-200">
-                  <span className="text-xs sm:text-sm text-muted-foreground block mb-1">
-                    Price
-                  </span>
-                  <div className="font-medium text-sm sm:text-base group-hover:text-primary transition-colors duration-200">
-                    {currentPlan.paymentPeriodInterval === "Month"
-                      ? `$${Number(currentPlanDetails?.price) / 100} / month`
-                      : currentPlan.paymentPeriodInterval === "Year"
-                      ? `$${Number(currentPlanDetails?.price) / 100} / year`
-                      : `$${Number(currentPlanDetails?.price) / 100}`}
                   </div>
                 </div>
               </div>
@@ -165,7 +164,7 @@ export function SubscriptionManagement({
             )}
           </div>
 
-          <div className="pt-4 sm:pt-6">
+          <div className="">
             <h4 className="font-medium mb-3 sm:mb-4 text-base sm:text-lg">
               Current Plan Features
             </h4>

@@ -21,6 +21,8 @@ import { Badge } from "@/components/ui/badge";
 import {
   CalendarDays,
   CheckCircle,
+  CheckIcon,
+  CircleCheck,
   CreditCard,
   Download,
   ReceiptText,
@@ -29,6 +31,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SelectPayment } from "@/lib/drizzle/schema";
 import Image from "next/image";
+import TailwindBadge from "./ui/tailwind-badge";
 
 interface InvoiceHistoryProps {
   className?: string;
@@ -50,14 +53,9 @@ export function InvoiceHistory({
   function getStatusBadge(status: string) {
     const isSuccess = status === "succeeded";
     return (
-      <Badge variant={isSuccess ? "default" : "secondary"}>
-        {isSuccess ? (
-          <CheckCircle className="h-3 w-3" />
-        ) : (
-          <XCircle className="h-3 w-3" />
-        )}
+      <TailwindBadge variant={isSuccess ? "green" : "red"}>
         {isSuccess ? "Paid" : "Failed"}
-      </Badge>
+      </TailwindBadge>
     );
   }
 
@@ -94,20 +92,18 @@ export function InvoiceHistory({
   }
 
   return (
-    <Card className={cn("w-full", className)}>
+    <Card className={cn("w-full max-w-2xl mx-auto", className)}>
       {(title || description) && (
-        <CardHeader className="space-y-1">
-          {title && (
-            <CardTitle className=" font-medium leading-tight truncate flex items-center gap-2 sm:gap-3 text-lg sm:text-xl">
-              <ReceiptText className="h-4 w-4 text-primary" />
-              {title}
-            </CardTitle>
-          )}
-          {description && (
-            <CardDescription className="text-sm text-muted-foreground">
-              {description}
-            </CardDescription>
-          )}
+        <CardHeader className=" px-4 sm:px-6">
+          <CardTitle className="flex items-center gap-2  text-lg sm:text-xl">
+            <div className="p-1.5  rounded-lg bg-primary/10 ring-1 ring-primary/20">
+              <ReceiptText className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            </div>
+            Invoice History
+          </CardTitle>
+          <CardDescription className="text-sm sm:text-base">
+            Your past invoices and payment receipts.
+          </CardDescription>
         </CardHeader>
       )}
       <CardContent>
@@ -118,12 +114,12 @@ export function InvoiceHistory({
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[120px]">Date</TableHead>
-              <TableHead>Payment Id</TableHead>
+              <TableHead>Date</TableHead>
+              {/* <TableHead>Payment Id</TableHead> */}
               <TableHead className="text-right">Amount</TableHead>
               <TableHead className="text-right">Status</TableHead>
-              <TableHead className="text-right">Payment Method</TableHead>
-              <TableHead className="text-right">Action</TableHead>
+              <TableHead className="text-right">Method</TableHead>
+              <TableHead className="text-right">Invoice</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -149,11 +145,11 @@ export function InvoiceHistory({
                     })}
                   </div>
                 </TableCell>
-                <TableCell className="max-w-[320px]">
+                {/* <TableCell>
                   <div className="truncate" title={inv.paymentId || "Invoice"}>
                     {inv.paymentId || "Invoice"}
                   </div>
-                </TableCell>
+                </TableCell> */}
                 <TableCell className="text-right font-medium">
                   ${Number(inv.totalAmount) / 100}
                 </TableCell>

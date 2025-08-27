@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { Circle, X } from "lucide-react";
 import { SelectSubscription } from "@/lib/drizzle/schema";
 import { ProductListResponse } from "dodopayments/resources/index.mjs";
+import TailwindBadge from "./ui/tailwind-badge";
 
 export interface CancelSubscriptionDialogProps {
   title: string;
@@ -206,11 +207,13 @@ export function CancelSubscriptionDialog({
                     Current subscription
                   </span>
                 </div>
-                <Badge variant="secondary">
+                <TailwindBadge
+                  variant={currentPlanDetails?.price ? "green" : "default"}
+                >
                   {currentPlanDetails?.price
                     ? `$${Number(currentPlanDetails?.price) / 100}`
                     : "Free"}
-                </Badge>
+                </TailwindBadge>
               </div>
               <div className="flex flex-col gap-2">
                 {plan &&

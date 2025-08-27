@@ -19,6 +19,7 @@ import { useState } from "react";
 import { ProductListResponse } from "dodopayments/resources/index.mjs";
 import { SelectSubscription } from "@/lib/drizzle/schema";
 import { freePlan } from "@/lib/config/plans";
+import TailwindBadge from "./ui/tailwind-badge";
 
 export interface UpdatePlanDialogProps {
   currentPlan: SelectSubscription | null;
@@ -31,16 +32,17 @@ export interface UpdatePlanDialogProps {
 
 export function UpdatePlanDialog({
   currentPlan,
-
   onPlanChange,
   className,
   title,
   triggerText,
   products,
 }: UpdatePlanDialogProps) {
-  const [isYearly, setIsYearly] = useState(false);
+  const [isYearly, setIsYearly] = useState(
+    currentPlan ? currentPlan.paymentPeriodInterval === "Year" : false
+  );
   const [selectedPlan, setSelectedPlan] = useState<string | undefined>(
-    undefined
+    currentPlan ? currentPlan.productId : undefined
   );
   const [isOpen, setIsOpen] = useState(false);
 
@@ -52,7 +54,7 @@ export function UpdatePlanDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button disabled={!!currentPlan?.cancelAtNextBillingDate}>
-          {triggerText || "Update Plan"}
+          {triggerText}
         </Button>
       </DialogTrigger>
       <DialogContent
@@ -111,9 +113,9 @@ export function UpdatePlanDialog({
                           {freePlan.name}
                         </Label>
 
-                        <Badge variant="secondary" className="flex-shrink-0">
-                          {freePlan.currency}
-                        </Badge>
+                        <TailwindBadge variant="blue" className="flex-shrink-0">
+                          {freePlan.features.length} Features
+                        </TailwindBadge>
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">
                         {freePlan.description}
@@ -217,12 +219,16 @@ export function UpdatePlanDialog({
                                 {plan.name}
                               </Label>
                               {plan.description && (
-                                <Badge
-                                  variant="secondary"
+                                <TailwindBadge
+                                  variant="blue"
                                   className="flex-shrink-0"
                                 >
-                                  {plan.currency}
-                                </Badge>
+                                  {
+                                    JSON.parse(plan.metadata?.features || "[]")
+                                      .length
+                                  }{" "}
+                                  Features
+                                </TailwindBadge>
                               )}
                             </div>
                             <p className="text-xs text-muted-foreground mt-1">
@@ -279,6 +285,8 @@ export function UpdatePlanDialog({
                             >
                               {selectedPlan === currentPlan?.productId
                                 ? "Current Plan"
+                                : currentPlan
+                                ? "Subscribe"
                                 : "Upgrade"}
                             </Button>
                           </motion.div>

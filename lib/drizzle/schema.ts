@@ -84,7 +84,7 @@ export const payments = pgTable("payments", {
   }).notNull(),
   subscriptionId: text("subscription_id").notNull(),
   brandId: text("brand_id").notNull(),
-  digitalProductDelivered: boolean("digital_product_delivered").notNull(),
+  digitalProductDelivered: boolean("digital_product_delivered"),
   metadata: jsonb("metadata"),
   webhookData: jsonb("webhook_data").notNull(),
   billing: jsonb("billing").notNull(),

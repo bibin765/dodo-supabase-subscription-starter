@@ -1,6 +1,6 @@
 import { db } from "../drizzle/client";
 import { payments, subscriptions, users } from "../drizzle/schema";
-import { and, eq, or } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 import { InsertPayment, InsertSubscription } from "../drizzle/schema";
 
@@ -10,7 +10,6 @@ export async function managePayment(event: any) {
     brandId: event.data.brand_id,
     createdAt: event.data.created_at,
     currency: event.data.currency,
-    digitalProductDelivered: event.data.digital_products_delivered,
     metadata: event.data.metadata,
     paymentMethod: event.data.payment_method,
     paymentMethodType: event.data.payment_method_type,

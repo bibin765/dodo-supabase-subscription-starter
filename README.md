@@ -9,9 +9,14 @@ This boilerplate helps you quickly set up a subscription-based SaaS with authent
 
 ## 🚀 Features
 
-- 🔑 Supabase google authentication
-- 💳 Payment & Subscription management with Dodo Payments
-- 📡 Webhook support for subscription lifecycle events via supabase functions
+- 🔑 **Authentication**: Google OAuth integration via Supabase
+- 💳 **Payment Processing**: Complete subscription management with Dodo Payments
+- 📦 **Dynamic Plans**: Products with configurable features via metadata
+- 📡 **Webhook Integration**: Real-time subscription lifecycle events via Supabase functions
+- 🗄️ **Database Management**: PostgreSQL with Drizzle ORM
+- 🎨 **Modern UI**: Built with Next.js 15, React 19, and Tailwind CSS
+- 📊 **Dashboard**: Comprehensive subscription and billing management
+- 📜 **Invoice History**: Complete payment and billing tracking
 
 ---
 
@@ -64,7 +69,19 @@ npm run deploy:webhook -- --project-ref [projectId]
 pnpm deploy:webhook --project-ref [projectId]
 ```
 
-### 6. Add webhook in Dodo Payments
+### 6. Create Products in Dodo Payments
+
+In your **Dodo Payments dashboard**, create products with the following metadata structure:
+
+```json
+{
+  "features": ["Feature 1", "Feature 2", "Feature 3"]
+}
+```
+
+The `features` array in the product metadata will be dynamically fetched and displayed as plan features in your application. Each feature will be shown as a badge in the subscription management interface.
+
+### 7. Add webhook in Dodo Payments
 
 In your **Dodo Payments dashboard**, configure the webhook URL pointing to your deployed Supabase function.
 
@@ -78,6 +95,42 @@ You can deploy this project instantly using the button below:
 
 ---
 
+## 🔄 How It Works
+
+### 1. **User Authentication**
+
+Users sign in with Google OAuth through Supabase Auth, creating a secure session.
+
+### 2. **Product Discovery**
+
+The application fetches products from Dodo Payments API, including metadata with feature arrays.
+
+### 3. **Plan Selection**
+
+Users can view available plans with their features and pricing, dynamically rendered from product metadata.
+
+### 4. **Subscription Flow**
+
+- New users: Redirected to Dodo Payments checkout
+- Existing users: Plan changes processed via Dodo Payments API
+
+### 5. **Webhook Processing**
+
+Real-time events from Dodo Payments are processed by Supabase functions:
+
+- Payment events (succeeded, failed, cancelled)
+- Subscription events (active, cancelled, expired, plan_changed)
+
+### 6. **Database Updates**
+
+All subscription and payment data is automatically synchronized with your PostgreSQL database via Drizzle ORM.
+
+### 7. **User Dashboard**
+
+Users can manage their subscriptions, view billing history, and access account settings.
+
+---
+
 ## 📚 Documentation
 
 - [Supabase Docs](https://supabase.com/docs)
@@ -88,8 +141,37 @@ You can deploy this project instantly using the button below:
 
 ## 🛠 Tech Stack
 
-```yaml
-- Next.js: https://nextjs.org/
-- Supabase: https://supabase.com/
-- Dodo Payments: https://dodopayments.com/
-```
+### Frontend & Framework
+
+- **Next.js 15** - React framework with App Router
+- **React 19** - Latest React version
+- **TypeScript** - Type safety and development experience
+- **Tailwind CSS** - Utility-first CSS framework
+- **Framer Motion** - Smooth animations and transitions
+
+### Backend & Database
+
+- **Supabase** - Backend-as-a-Service (Auth, Database, Functions)
+- **PostgreSQL** - Robust relational database
+- **Drizzle ORM** - Type-safe database operations
+- **Supabase Functions** - Serverless webhook handling
+
+### Payments & Subscriptions
+
+- **Dodo Payments** - Modern payment processing
+- **Webhook Integration** - Real-time subscription events
+- **Dynamic Plans** - Configurable product features via metadata
+
+### UI Components
+
+- **Radix UI** - Accessible component primitives
+- **Lucide Icons** - Beautiful icon library
+- **Sonner** - Toast notifications
+- **shadcn/ui** - Pre-built component library
+
+### Development Tools
+
+- **TypeScript** - Type safety
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
+- **Drizzle Kit** - Database migrations and management

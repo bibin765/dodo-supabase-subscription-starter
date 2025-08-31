@@ -1,6 +1,21 @@
-# Dodo Supabase Subscription Starter
+# Dodo Payments Supabase Subscription Starter
 
 <img src="./public/readme-banner.png" />
+
+<p align="center">
+  <a href="https://vercel.com/new/clone?repository-url=https://github.com/dodopayments/dodo-supabase-subscription-starter&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,DATABASE_URL,DODO_PAYMENTS_API_KEY,DODO_WEBHOOK_SECRET,DODO_PAYMENTS_ENVIRONMENT">
+    <img src="https://img.shields.io/badge/Vercel-Deploy-red?logo=vercel" alt="Deploy on Vercel" />
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/license-GPLv3-blue.svg" alt="License: GPLv3" />
+  </a>
+  <a href="https://docs.dodopayments.com">
+    <img src="https://img.shields.io/badge/docs-live-brightgreen.svg" alt="Live Documentation" />
+  </a>
+  <a href="https://discord.gg/bYqAp4ayYh">
+    <img src="https://img.shields.io/badge/chat-on%20discord-7289DA.svg" alt="Chat on Discord" />
+  </a>
+</p>
 
 A **minimal subscription starter kit** built with **Next.js**, **Supabase**, and **Dodo Payments**.
 This boilerplate helps you quickly set up a subscription-based SaaS with authentication, payments, and webhooks.
@@ -36,7 +51,7 @@ Before you begin, ensure you have the following installed:
 
 ```bash
 # Clone the repository
-git clone https://github.com/darshansrc/dodo-supabase-subscription-starter.git
+git clone https://github.com/dodopayments/dodo-supabase-subscription-starter.git
 cd dodo-supabase-subscription-starter
 
 # Install dependencies
@@ -179,19 +194,17 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 - ✅ **Managed services** vs ❌ **Vendor lock-in** - Faster development but dependent on third parties
 - ✅ **Modern stack** vs ❌ **Learning curve** - Great DX but requires familiarity with latest tools
 
-### Development Time
-
-This starter kit took **~10 hours** to build from scratch, including:
-
-- Authentication setup and database schema
-- Payment integration and webhook handling
-- Dashboard UI and subscription management
-- Testing and documentation
-
 ---
 
-## ▲ Deploy with Vercel
+### ▲ Deploy with Vercel
 
 You can deploy this project instantly using the button below:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/darshansrc/dodo-supabase-subscription-starter&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,DATABASE_URL,DODO_PAYMENTS_API_KEY,DODO_WEBHOOK_SECRET,DODO_PAYMENTS_ENVIRONMENT)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/dodopayments/dodo-supabase-subscription-starter&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,DATABASE_URL,DODO_PAYMENTS_API_KEY,DODO_WEBHOOK_SECRET,DODO_PAYMENTS_ENVIRONMENT)
+
+---
+
+### 👤 Original Author
+
+This project was originally created by [Darshan Gowda](https://github.com/darshansrc).
+

@@ -37,7 +37,7 @@ export default function Header() {
         <Link
           target="_blank"
           rel="noopener noreferrer"
-          href="https://vercel.com/new/clone?repository-url=https://github.com/darshansrc/dodo-supabase-subscription-starter&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,DATABASE_URL,DODO_PAYMENTS_API_KEY,DODO_WEBHOOK_SECRET,DODO_PAYMENTS_ENVIRONMENT"
+          href="https://vercel.com/new/clone?repository-url=https://github.com/dodopayments/dodo-supabase-subscription-starter&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,DATABASE_URL,DODO_PAYMENTS_API_KEY,DODO_WEBHOOK_SECRET,DODO_PAYMENTS_ENVIRONMENT"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +86,7 @@ export default function Header() {
             buttonVariants({ variant: "outline", size: "sm" }),
             "rounded-sm"
           )}
-          href="https://github.com/darshansrc/dodo-supabase-subscription-starter"
+          href="https://github.com/dodopayments/dodo-supabase-subscription-starter"
           rel="noopener noreferrer"
           target="_blank"
         >

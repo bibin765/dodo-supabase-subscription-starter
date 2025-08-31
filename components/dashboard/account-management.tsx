@@ -25,7 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { deleteAccount } from "@/actions/delet-account";
+import { deleteAccount } from "@/actions/delete-account";
 import { SelectSubscription, SelectUser } from "@/lib/drizzle/schema";
 import { useState } from "react";
 import { toast } from "sonner";

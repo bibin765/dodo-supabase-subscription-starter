@@ -20,7 +20,7 @@ import { ProductListResponse } from "dodopayments/resources/index.mjs";
 import { SelectSubscription } from "@/lib/drizzle/schema";
 import { freePlan } from "@/lib/config/plans";
 import TailwindBadge from "@/components/ui/tailwind-badge";
-import { Loader, LoaderCircle, X } from "lucide-react";
+import { LoaderCircle, X } from "lucide-react";
 
 export interface UpdatePlanDialogProps {
   currentPlan: SelectSubscription | null;

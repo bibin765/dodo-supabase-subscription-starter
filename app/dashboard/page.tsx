@@ -4,7 +4,6 @@ import { Dashboard } from "@/components/dashboard/dashboard";
 import { redirect } from "next/navigation";
 import React from "react";
 import { getUserSubscription } from "@/actions/get-user-subscription";
-import { SelectSubscription, SelectUser } from "@/lib/drizzle/schema";
 import { getInvoices } from "@/actions/get-invoices";
 
 export default async function DashboardPage() {
@@ -16,16 +15,13 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  if (!productRes.success) {
-    return <div>Error</div>;
-  }
-
-  if (!userSubscriptionRes.success) {
-    return <div>Error</div>;
-  }
-
-  if (!invoicesRes.success) {
-    return <div>Error</div>;
+  if (
+    !productRes.success ||
+    !userSubscriptionRes.success ||
+    !invoicesRes.success
+  ) {
+    // TODO: Replace this with an error boundary
+    return <div>Internal Server Error</div>;
   }
 
   return (

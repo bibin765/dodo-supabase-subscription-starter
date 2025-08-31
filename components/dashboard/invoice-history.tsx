@@ -17,17 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import {
-  CalendarDays,
-  CheckCircle,
-  CheckIcon,
-  CircleCheck,
-  CreditCard,
-  Download,
-  ReceiptText,
-  XCircle,
-} from "lucide-react";
+import { CalendarDays, CreditCard, Download, ReceiptText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SelectPayment } from "@/lib/drizzle/schema";
 import Image from "next/image";

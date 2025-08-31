@@ -1,3 +1,4 @@
+import { DodoPaymentsEnvironment } from "@/lib/dodo-payments/client";
 import { Checkout } from "@dodopayments/nextjs";
 import { NextRequest } from "next/server";
 
@@ -6,9 +7,8 @@ export const GET = async (req: NextRequest) => {
   const handler = Checkout({
     bearerToken: process.env.DODO_PAYMENTS_API_KEY!,
     returnUrl: `${origin}/dashboard`,
-    environment:
-      (process.env.DODO_PAYMENTS_ENVIRONMENT as "test_mode" | "live_mode") ||
-      "test_mode",
+    environment: process.env
+      .DODO_PAYMENTS_ENVIRONMENT as DodoPaymentsEnvironment,
     type: "static",
   });
 
@@ -20,9 +20,8 @@ export const POST = async (req: NextRequest) => {
   const handler = Checkout({
     bearerToken: process.env.DODO_PAYMENTS_API_KEY!,
     returnUrl: `${origin}/dashboard`,
-    environment:
-      (process.env.DODO_PAYMENTS_ENVIRONMENT as "test_mode" | "live_mode") ||
-      "test_mode",
+    environment: process.env
+      .DODO_PAYMENTS_ENVIRONMENT as DodoPaymentsEnvironment,
     type: "dynamic",
   });
 

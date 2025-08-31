@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { useState } from "react";
-import { Loader, LoaderCircle } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 
 export default function GoogleSignIn() {
   const supabase = createClient();

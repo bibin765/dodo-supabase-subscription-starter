@@ -192,14 +192,16 @@ export function UpdatePlanDialog({
               {products &&
                 products
                   .filter((plan) => {
+                    if (plan.price_detail?.type === "one_time_price") {
+                      return false;
+                    }
+
                     if (isYearly) {
                       return (
-                        // @ts-ignore
                         plan.price_detail?.payment_frequency_interval === "Year"
                       );
                     } else {
                       return (
-                        // @ts-ignore
                         plan.price_detail?.payment_frequency_interval ===
                         "Month"
                       );

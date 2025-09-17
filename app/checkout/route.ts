@@ -22,7 +22,7 @@ export const POST = async (req: NextRequest) => {
     returnUrl: `${origin}/dashboard`,
     environment: process.env
       .DODO_PAYMENTS_ENVIRONMENT as DodoPaymentsEnvironment,
-    type: "dynamic",
+    type: "session",
   });
 
   return handler(req);

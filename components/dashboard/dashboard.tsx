@@ -115,15 +115,35 @@ export function Dashboard(props: {
       return;
     }
 
-    const url = new URL(`${window.location.origin}/checkout`);
+    try {
+      const response = await fetch(`${window.location.origin}/checkout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          product_cart: [{
+            product_id: productId,
+            quantity: 1,
+          }],
+          customer: {
+            email: props.user.email,
+            name: props.user.user_metadata.name,
+          },
+          return_url: `${window.location.origin}/dashboard`,
+        }),
+      });
 
-    url.searchParams.set("email", props.user.email ?? "");
-    url.searchParams.set("disableEmail", "true");
-    url.searchParams.set("productId", productId);
-    if (props.user.user_metadata.full_name) {
-      url.searchParams.set("fullName", props.user.user_metadata.full_name);
+      if (!response.ok) {
+        throw new Error("Failed to create checkout session");
+      }
+
+      const { checkout_url } = await response.json();
+      window.location.href = checkout_url;
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error("Failed to start checkout process");
     }
-    window.location.href = url.toString();
   };
 
   return (

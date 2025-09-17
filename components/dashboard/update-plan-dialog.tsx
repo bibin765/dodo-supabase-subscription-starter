@@ -208,9 +208,16 @@ export function UpdatePlanDialog({
                     }
                   })
                   .sort(
-                    (a, b) =>
-                      Number(a.price_detail?.price) -
-                      Number(b.price_detail?.price)
+                    (a, b) => {
+                      const getPrice = (product: any) => {
+                        if (!product.price_detail) return 0;
+                        if (product.price_detail.type === 'usage_based_price') {
+                          return product.price_detail.fixed_price;
+                        }
+                        return product.price_detail.price;
+                      };
+                      return Number(getPrice(a)) - Number(getPrice(b));
+                    }
                   )
                   .map((plan) => (
                     <motion.div

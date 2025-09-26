@@ -22,6 +22,12 @@ This boilerplate helps you quickly set up a subscription-based SaaS with authent
 
 ---
 
+## 🎥 Demo
+
+![Demo](./assets/demo.gif)
+
+---
+
 ## 🚀 Features
 
 - 🔑 **Authentication**: Google OAuth integration via Supabase
